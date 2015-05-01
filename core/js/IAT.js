@@ -177,30 +177,60 @@ function initRounds()
     for (var i=0; i<6; i++)
     {
         roundArray[i] = [];
+        var numSpartan;
+        var numImp;
+        var numUnimp;
         switch (i)
         {
             case 0:
             case 1:
-                numrounds = 5;
+            	numSpartan = 7;
+            	numImp = 7;
+            	numUnimp = 10;
+                numrounds = 24;
                 break;
             case 2:
-                numrounds = 20;
+            	numSpartan = 21;
+            	numImp = 21;
+            	numUnimp = 30;
+                numrounds = 72;
                 break;
             case 3:
-                numrounds = 5;
+            	numSpartan = 7;
+            	numImp = 10;
+            	numUnimp = 7;
+                numrounds = 24;
             	break
             case 4:
-            	numrounds = 20;
+            	numSpartan = 21;
+            	numImp = 21;
+            	numUnimp = 30;
+            	numrounds = 72;
                 break;
             
         }
 		prevIndexA = -1; prevIndex1 = -1;
         for (var j = 0; j<numrounds; j++)
         {
+
             var round = new IATround();
-            
-				if (j % 2 == 0) { round.category = template.catA.datalabel; }
-				else { round.category = (Math.random() < 0.5 ? template.cat1.datalabel : template.cat2.datalabel); }
+
+
+            // randomly choose category
+            var randNum = Math.random();
+
+            if ((randNum < 0.33 || (numImp == 0 && numUnimp == 0)) && numSpartan > 0){
+            	round.category = template.catA.datalabel;
+            	numSpartan--;
+            } else if ((randNum < 0.66 || (numUnimp == 0 && numSpartan == 0)) && numImp > 0){
+            	round.category = template.cat1.datalabel;
+            	numImp--;
+            } else if ((randNum >= 0.66 || (numImp == 0 && numSpartan == 0)) && numUnimp > 0){
+            	round.category = template.cat2.datalabel;
+            	numUnimp--;
+            }
+            //if (j % 2 == 0) { round.category = template.catA.datalabel; }
+				//else { round.category = (Math.random() < 0.5 ? template.cat1.datalabel : template.cat2.datalabel); }
         	// pick a category
         	if (round.category == template.catA.datalabel) 
         	{ 
@@ -249,6 +279,23 @@ function initRounds()
         	
         	roundArray[i].push(round);
         }
+
+        var nSpart = 0;
+    	var nImp = 0;
+    	var nUnimp = 0;
+    	for (var k=0; k < roundArray[i].length; k++){
+    		if (roundArray[i][k].category == template.catA.datalabel){
+    			nSpart++;
+    		} else if (roundArray[i][k].category == template.cat1.datalabel){
+    			nImp++;
+    		} else if (roundArray[i][k].category == template.cat2.datalabel) {
+    			nUnimp++;
+    		}
+    	}
+
+    	console.log("Spartan: "+nSpart);
+    	console.log("Important: "+nImp);
+    	console.log("Unimportant: "+nUnimp);
     }
     
     return roundArray;
@@ -664,11 +711,11 @@ function runSession(kEvent)
 {
 	var rCorrect = roundArray[session][roundnum].correct;
 	var unicode = kEvent.keyCode? kEvent.keyCode : kEvent.charCode;
-	keyE = (unicode == 69 || unicode == 101 );
-	keyI = (unicode == 73 || unicode == 105 );
+	keyZ = (unicode == 122 || unicode == 90 );
+	keyPeriod = (unicode == 46 || unicode == 190 );
 	
 	// if correct key (1 & E) or (2 & I)
-	if ((rCorrect == 1 && keyE) || (rCorrect == 2 && keyI))
+	if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod))
 	{
 		console.log("correct");
 		$("#wrong").css("display","none"); // remove X if it exists
@@ -696,7 +743,7 @@ function runSession(kEvent)
 		}
 	}
 	// incorrect key
-	else if ((rCorrect == 1 && keyI) || (rCorrect == 2 && keyE))
+	else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ))
 	{
 		$("#wrong").css("display","block"); // show X
 		roundArray[session][roundnum].errors++; // note error
