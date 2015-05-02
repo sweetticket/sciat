@@ -219,23 +219,54 @@ function initRounds()
             // randomly choose category
             var randNum = Math.random();
 
-            if ((randNum < 0.33 || (numImp == 0 && numUnimp == 0)) && numSpartan > 0){
-            	round.category = template.catA.datalabel;
-            	numSpartan--;
-            } else if ((randNum < 0.66 || (numUnimp == 0 && numSpartan == 0)) && numImp > 0){
-            	round.category = template.cat1.datalabel;
-            	numImp--;
-            } else if ((randNum >= 0.66 || (numImp == 0 && numSpartan == 0)) && numUnimp > 0){
-            	round.category = template.cat2.datalabel;
-            	numUnimp--;
+            if (randNum < 0.25){
+            	if (numSpartan > 0){
+            		round.category = template.catA.datalabel;
+            		numSpartan--;
+            	}else if (numImp > 0){
+            		round.category = template.cat1.datalabel;
+            		numImp--;
+            	}else if (numUnimp > 0){
+            		round.category = template.cat2.datalabel;
+            		numUnimp--;
+            	}
+            } else if (randNum < 0.5 ){
+            	if (numImp > 0){
+            		round.category = template.cat1.datalabel;
+            		numImp--;
+            	}else if (numSpartan > 0){
+            		round.category = template.catA.datalabel;
+            		numSpartan--;
+            	}else if (numUnimp > 0){
+            		round.category = template.cat2.datalabel;
+            		numUnimp--;
+            	}
+            } else {
+            	if (numUnimp > 0){
+            		round.category = template.cat2.datalabel;
+            		numUnimp--;
+            	}else if (numSpartan > 0){
+            		round.category = template.catA.datalabel;
+            		numSpartan--;
+            	}else if (numImp > 0){
+            		round.category = template.cat1.datalabel;
+            		numImp--;
+            	}
             }
+
+
+
+
+
+
+
             //if (j % 2 == 0) { round.category = template.catA.datalabel; }
 				//else { round.category = (Math.random() < 0.5 ? template.cat1.datalabel : template.cat2.datalabel); }
         	// pick a category
         	if (round.category == template.catA.datalabel) 
         	{ 
 				round.itemtype = template.catA.itemtype;
-				if (i < 2) { round.correct = 1; }
+				if (i < 3) { round.correct = 1; }
 				else { round.correct = 2; }
 				
 				// pick an item different from the last
