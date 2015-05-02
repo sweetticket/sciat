@@ -77,3 +77,11 @@ body {
 	height: 80px;
 	display: none;
 }
+
+tr{
+	text-align: center;
+}
+
+td {
+	padding-left: 30px;
+}

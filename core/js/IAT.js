@@ -18,7 +18,6 @@ function initialize()
 			template = data;
 			$.get("core/instruct0.html", function(data) {
 				$("#instructions").html(data);
-				$("#subID").val(randomString(10));
 			});
 		});
 	});
@@ -30,8 +29,8 @@ function loadInstructions(stage)
 	switch(stage)
 	{
 		case 'one':
-			sub = $("#subID").val();
-			if(sub.search('/[^a-zA-Z0-9]/g')==-1)
+			sub = randomString(10);
+			if(sub.search('/[^a-zA-Z0-9]/g')==-1 && document.getElementById('agree').checked)
 			{
 				$.get("core/instruct1.html", function(data) {
 					$("#instructions").html(data);
@@ -45,9 +44,16 @@ function loadInstructions(stage)
 					}
 				});
 			}
-			else
+			else if (sub.search('/[^a-zA-Z0-9]/g')!= -1)
 			{
 				alert("Please enter a valid subject ID");
+			}
+
+			else if (!(document.getElementById('agree').checked)){
+				alert("You must agree with the terms before proceeding.");
+				$.get("core/instruct0.html", function(data) {
+				$("#instructions").html(data);
+			});
 			}
 			break;
 		case 'two':
