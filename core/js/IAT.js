@@ -732,19 +732,7 @@ function displayItem()
 {
 	var tRound = roundArray[session][roundnum]; 
 	tRound.starttime = new Date().getTime(); // the time the item was displayed
-	if (tRound.itemtype == "img")
-	{
-		if (tRound.category == template.catA.datalabel)
-			{ $("#"+template.catA.datalabel+tRound.catIndex).css("display","block"); }
-		else if (tRound.category == template.catB.datalabel)
-			{ $("#"+template.catB.datalabel+tRound.catIndex).css("display","block"); }
-		else if (tRound.category == template.cat1.datalabel)
-			{ $("#"+template.cat1.datalabel+tRound.catIndex).css("display","block"); }
-		else if (tRound.category == template.cat2.datalabel)
-			{ $("#"+template.cat2.datalabel+tRound.catIndex).css("display","block"); }
-	}
-	else if (tRound.itemtype == "txt")
-	{
+	
 		if (tRound.category == template.catA.datalabel)
 		{ 
 			$("#word").html(template.catA.items[tRound.catIndex])
@@ -765,11 +753,18 @@ function displayItem()
 			$("#word").html(template.cat2.items[tRound.catIndex])
 			$("#word").css("display","block"); 
 		}
+	setTimeout(tooSlow, 1500);
+}
+
+function tooSlow() {
+	if (!pause){
+		$("#tooslow").css("display", "block");
 	}
 }
 
 function step(){
 	pause = false;
+	$("#tooslow").css("display", "none");
 	$("#wrong").css("display","none"); // remove X if it exists
 		roundArray[session][roundnum].endtime = new Date().getTime(); // end time
 		// if less than 24 trials run in a row
@@ -812,6 +807,7 @@ function runSession(kEvent)
 		// incorrect key
 		else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ)) {
 			pause = true;
+			$("#tooslow").css("display", "none");
 			$("#wrong").css("display","block"); // show X
 			roundArray[session][roundnum].errors++; // note error
 			total_errors++;

@@ -78,6 +78,15 @@ body {
 	display: none;
 }
 
+#tooslow {
+	margin-left: auto;
+	margin-right: auto;
+	color: red;
+	font-size: 20px;
+	text-align: center;
+	display: none;
+}
+
 tr{
 	text-align: center;
 }
