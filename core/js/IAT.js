@@ -127,6 +127,8 @@ function startIAT()
 	instruct_num = 1;
 	roundnum = 0;
 	loopnum = 0;
+	total_errors = 0;
+	pause = false;
 	
 	// default to show results to participant
 	if (!('showResult' in template))
@@ -766,23 +768,15 @@ function displayItem()
 	}
 }
 
-function runSession(kEvent)
-{
-	var rCorrect = roundArray[session][roundnum].correct;
-	var unicode = kEvent.keyCode? kEvent.keyCode : kEvent.charCode;
-	keyZ = (unicode == 122 || unicode == 90 );
-	keyPeriod = (unicode == 46 || unicode == 190 );
-	
-	// if correct key (1 & E) or (2 & I)
-	if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod))
-	{
-		console.log("correct");
-		$("#wrong").css("display","none"); // remove X if it exists
+function step(){
+	pause = false;
+	$("#wrong").css("display","none"); // remove X if it exists
 		roundArray[session][roundnum].endtime = new Date().getTime(); // end time
 		// if less than 24 trials run in a row
 		if (loopnum < 23) {
 			loopnum++;
 			roundnum++;
+			console.log(roundnum);
 			$(".IATitem").css("display","none"); // hide all items
 			displayItem(); // display chosen item
 		} else {
@@ -793,17 +787,37 @@ function runSession(kEvent)
 				roundnum = 0; // reset rounds to 0
 			}else{
 				roundnum++;
+				console.log(roundnum);
 			}
 				loopnum = 0;
 				instruct_num++;
 				currentState = "instruction"; // change state to instruction
 				instructionPage(); // show instruction page
 		}
+}
+
+function runSession(kEvent)
+{
+	var rCorrect = roundArray[session][roundnum].correct;
+	var unicode = kEvent.keyCode? kEvent.keyCode : kEvent.charCode;
+	keyZ = (unicode == 122 || unicode == 90 );
+	keyPeriod = (unicode == 46 || unicode == 190 );
+		
+	if (!pause){
+		// if correct key (1 & E) or (2 & I)
+		if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod)) {
+			console.log("correct");
+			step();
+		}
+		// incorrect key
+		else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ)) {
+			pause = true;
+			$("#wrong").css("display","block"); // show X
+			roundArray[session][roundnum].errors++; // note error
+			total_errors++;
+			setTimeout(step, 2000);
+		}
 	}
-	// incorrect key
-	else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ))
-	{
-		$("#wrong").css("display","block"); // show X
-		roundArray[session][roundnum].errors++; // note error
-	}
+
+
 }
