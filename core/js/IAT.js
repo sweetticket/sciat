@@ -78,7 +78,7 @@ function loadInstructions(stage)
 				}
 			break;
 		case 'three':
-			$.get("core/instruct4.html", function(data) {
+			$.get("core/instruct3.html", function(data) {
 				$("#instructions").html(data);
 			});
 			break;
@@ -124,7 +124,9 @@ function startIAT()
 {
 	currentState = "instruction";
 	session = 1;
+	instruct_num = 1;
 	roundnum = 0;
+	loopnum = 0;
 	
 	// default to show results to participant
 	if (!('showResult' in template))
@@ -353,35 +355,45 @@ function initRounds()
 // insert instruction text based on stage in IAT
 function instructionPage()
 {	
-	switch (session)
+	switch (instruct_num)
     {
-		case 0:
-			console.log("entering session 0");
+		case 1:
 			$("#left_cat").html(template.cat1.label+'<br>or<br>'+template.catA.label);
 			$("#right_cat").html(template.cat2.label);
 			break;
-        case 1: 
-        	console.log("entering session 1");
+        case 2: 
         	$("#left_cat").html(template.cat1.label+'<br>or<br>'+template.catA.label);
 			$("#right_cat").html(template.cat2.label);
-			break;  
-        case 2:
-        	console.log("entering session 2");
-			$("#left_cat").html(template.cat1.label);
-			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
-            break;
+			break; 
+
         case 3:
-        	console.log("entering session 3");
+			$("#left_cat").html(template.cat1.label+'<br>or<br>'+template.catA.label);
+			$("#right_cat").html(template.cat2.label);
+            break;
+        case 4:
+        	$("#left_cat").html(template.cat1.label+'<br>or<br>'+template.catA.label);
+			$("#right_cat").html(template.cat2.label);
+            break;
+        case 5:
         	$("#left_cat").html(template.cat1.label);
 			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
             break;
-        case 4:
-        	console.log("entering session 4");
-            break;
-        case 5:
+        case 6:
+        	$("#left_cat").html(template.cat1.label);
+			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
         	break
+        case 7:
+        	$("#left_cat").html(template.cat1.label);
+			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
+        	break;
+        case 8:
+        	$("#left_cat").html(template.cat1.label);
+			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
+        	break;
+        case 9:
+        	break;
     }
-	if (session == 5)
+	if (instruct_num == 9)
 	{
 		$("#left_cat").html("");
 		$("#right_cat").html("");
@@ -409,9 +421,7 @@ function instructionPage()
 	}
 	else
 	{
-		if (session == 1 || session == 3 || session == 5){
-			$.get("core/gInstruct"+(session)+".html", function(data) { $('#exp_instruct').html(data); });
-		}
+			$.get("core/gInstruct"+(instruct_num)+".html", function(data) { $('#exp_instruct').html(data); });
 	}
 }
 
@@ -769,26 +779,25 @@ function runSession(kEvent)
 		console.log("correct");
 		$("#wrong").css("display","none"); // remove X if it exists
 		roundArray[session][roundnum].endtime = new Date().getTime(); // end time
-		// if more rounds
-		if (roundnum < roundArray[session].length-1)
-		{
+		// if less than 24 trials run in a row
+		if (loopnum < 23) {
+			loopnum++;
 			roundnum++;
 			$(".IATitem").css("display","none"); // hide all items
 			displayItem(); // display chosen item
-		}
-		else
-		{
+		} else {
     		$(".IATitem").css("display","none"); // hide all items
-    		session++; // move to next session
-    		console.log(session);
-			roundnum=0; // reset rounds to 0
-    		if (session == 3 || session == 5){
+    		if (roundnum >= roundArray[session].length-1){
+    			session++; // move to next session
+    			console.log(session);
+				roundnum = 0; // reset rounds to 0
+			}else{
+				roundnum++;
+			}
+				loopnum = 0;
+				instruct_num++;
 				currentState = "instruction"; // change state to instruction
 				instructionPage(); // show instruction page
-			}else{
-				currentState = "play";
-				displayItem();
-			}
 		}
 	}
 	// incorrect key
