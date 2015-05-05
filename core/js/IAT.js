@@ -8,6 +8,11 @@ function randomString(length) {
     return result;
 }
 
+function isValidEmailAddress(emailAddress) {
+    var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
+    return pattern.test(emailAddress);
+};
+
 // Loads the input file and starts introduction
 function initialize()
 {	
@@ -29,35 +34,49 @@ function loadInstructions(stage)
 	switch(stage)
 	{
 		case 'one':
-			sub = randomString(10);
-			if(sub.search('/[^a-zA-Z0-9]/g')==-1 && document.getElementById('agree').checked)
-			{
-				$.get("core/instruct1.html", function(data) {
-					$("#instructions").html(data);
-					$(".IATname").html(template.name);
-					if(	template.catA.itemtype == "img" || 
-						template.catB.itemtype == "img" || 
-						template.cat1.itemtype == "img" || 
-						template.cat2.itemtype == "img")
-					{
-						$("#andpics").html(" and pictures ");
-					}
-				});
-			}
-			else if (sub.search('/[^a-zA-Z0-9]/g')!= -1)
-			{
-				alert("Please enter a valid subject ID");
-			}
-
-			else if (!(document.getElementById('agree').checked)){
+			if (!(document.getElementById('agree').checked)){
 				alert("You must agree with the terms before proceeding.");
 				$.get("core/instruct0.html", function(data) {
-				$("#instructions").html(data);
-			});
+					$("#instructions").html(data);
+				});
+			}else{
+				$.get("core/instruct1.html", function(data) {
+						$("#instructions").html(data);
+					});
 			}
 			break;
 		case 'two':
-			$.get("core/instruct2.html", function(data) {
+			sub = $("#subID").val().trim();
+			sub2 = $("#subID_confirm").val().trim();
+				if(isValidEmailAddress(sub) && (sub == sub2)) {
+					$.get("core/instruct2.html", function(data) {
+						$("#instructions").html(data);
+					});
+				}
+				else if (sub != sub2) {
+					alert("Emails do not match.");
+					$.get("core/instruct0.html", function(data) {
+						$("#instructions").html(data);
+						$("#subID").val(sub);
+						$("#subID_confirm").val(sub2);
+					});
+				}else if (!sValidEmailAddress(sub)){
+					alert("Please enter a valid email address.");
+					$.get("core/instruct0.html", function(data) {
+						$("#instructions").html(data);
+						$("#subID").val(sub);
+						$("#subID_confirm").val(sub2);
+					});
+				}
+			break;
+		case 'three':
+			$.get("core/instruct4.html", function(data) {
+				$("#instructions").html(data);
+			});
+			break;
+
+		case 'four':
+			$.get("core/instruct4.html", function(data) {
 				$("#instructions").html(data);
 				
 				$("#clabel1").html(template.cat1.label);
@@ -105,21 +124,6 @@ function startIAT()
 	    template.showResult = "show";
 	}
 	
-	// make the target or association words green
-	if (Math.random() < 0.5)
-	{
-		openA = "<font color=green>";
-		closeA = "</font>";
-		open1 = "";
-		close1 = "";
-	}
-	else
-	{		
-		open1 = "<font color=green>";
-		close1 = "</font>";
-		openA = "";
-		closeA = "";
-	}
 	buildPage();
 	roundArray = initRounds();
     instructionPage();
@@ -345,23 +349,23 @@ function instructionPage()
     {
 		case 0:
 			console.log("entering session 0");
-			$("#left_cat").html(open1+template.cat1.label+close1+'<br>or<br>'+openA+template.catA.label+closeA);
-			$("#right_cat").html(open1+template.cat2.label+close1);
+			$("#left_cat").html(template.cat1.label+'<br>or<br>'+template.catA.label);
+			$("#right_cat").html(template.cat2.label);
 			break;
         case 1: 
         	console.log("entering session 1");
-        	$("#left_cat").html(open1+template.cat1.label+close1+'<br>or<br>'+openA+template.catA.label+closeA);
-			$("#right_cat").html(open1+template.cat2.label+close1);
+        	$("#left_cat").html(template.cat1.label+'<br>or<br>'+template.catA.label);
+			$("#right_cat").html(template.cat2.label);
 			break;  
         case 2:
         	console.log("entering session 2");
-			$("#left_cat").html(open1+template.cat1.label+close1);
-			$("#right_cat").html(open1+template.cat2.label+close1+'<br>or<br>'+openA+template.catA.label+closeA);
+			$("#left_cat").html(template.cat1.label);
+			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
             break;
         case 3:
         	console.log("entering session 3");
-        	$("#left_cat").html(open1+template.cat1.label+close1);
-			$("#right_cat").html(open1+template.cat2.label+close1+'<br>or<br>'+openA+template.catA.label+closeA);
+        	$("#left_cat").html(template.cat1.label);
+			$("#right_cat").html(template.cat2.label+'<br>or<br>'+template.catA.label);
             break;
         case 4:
         	console.log("entering session 4");
@@ -461,25 +465,25 @@ function calculateIAT()
 	// put together feedback based on direction & magnitude
 	if (tvalue < 0 && severity != "")
     { 
-        resulttext = "<div style='text-align:center;padding:20px'>You associate "+openA+template.catB.label+closeA+" with "+open1+template.cat1.label+close1;
-        resulttext += " and "+openA+template.catA.label+closeA+" with "+open1+template.cat2.label+close1+severity;
-        resulttext += "you associate "+openA+template.catA.label+closeA+" with "+open1+template.cat1.label+close1;
-        resulttext += " and "+openA+template.catB.label+closeA+" with "+open1+template.cat2.label+close1+".</div>"; 
+        resulttext = "<div style='text-align:center;padding:20px'>You associate "+template.catB.label+" with "+template.cat1.label;
+        resulttext += " and "+template.catA.label+" with "+template.cat2.label+severity;
+        resulttext += "you associate "+template.catA.label+" with "+template.cat1.label;
+        resulttext += " and "+template.catB.label+" with "+template.cat2.label+".</div>"; 
         // resulttext += "<div>incompatible: "+incompatible+" ("+(ivar/39)+"); compatible: "+compatible+" ("+(cvar/39)+"); tvalue: "+tvalue+"</div>";
     }
     else if (tvalue > 0 && severity != "")
     { 
-        resulttext = "<div style='text-align:center;padding:20px'>You associate "+openA+template.catA.label+closeA+" with "+open1+template.cat1.label+close1;
-        resulttext += " and "+openA+template.catB.label+closeA+" with "+open1+template.cat2.label+close1+severity;
-        resulttext += "you associate "+openA+template.catB.label+closeA+" with "+open1+template.cat1.label+close1;
-        resulttext += " and "+openA+template.catA.label+closeA+" with "+open1+template.cat2.label+close1+".</div>"; 
+        resulttext = "<div style='text-align:center;padding:20px'>You associate "+template.catA.label+" with "+template.cat1.label;
+        resulttext += " and "+template.catB.label+" with "+template.cat2.label+severity;
+        resulttext += "you associate "+template.catB.label+" with "+template.cat1.label;
+        resulttext += " and "+template.catA.label+" with "+template.cat2.label+".</div>"; 
         // resulttext += "<div>incompatible: "+incompatible+" ("+(ivar/39)+"); compatible: "+compatible+" ("+(cvar/39)+"); tvalue: "+tvalue+"</div>";
     }
     else
     { 
-        resulttext = "<div style='text-align:center;padding:20px'>You do not associate "+openA+template.catA.label+closeA;
-        resulttext += " with "+open1+template.cat1.label+close1+" any more or less than you associate ";
-        resulttext += openA+template.catB.label+closeA+" with "+open1+template.cat1.label+close1+".</div>"; 
+        resulttext = "<div style='text-align:center;padding:20px'>You do not associate "+template.catA.label;
+        resulttext += " with "+template.cat1.label+" any more or less than you associate ";
+        resulttext += template.catB.label+" with "+template.cat1.label+".</div>"; 
         // resulttext += "<div>incompatible: "+incompatible+" ("+(ivar/39)+"); compatible: "+compatible+" ("+(cvar/39)+"); tvalue: "+tvalue+"</div>";
     }
 	$("#picture_frame").html(resulttext);
@@ -723,22 +727,22 @@ function displayItem()
 	{
 		if (tRound.category == template.catA.datalabel)
 		{ 
-			$("#word").html(openA+template.catA.items[tRound.catIndex]+closeA)
+			$("#word").html(template.catA.items[tRound.catIndex])
 			$("#word").css("display","block"); 
 		}
 		else if (tRound.category == template.catB.datalabel)
 		{ 
-			$("#word").html(openA+template.catB.items[tRound.catIndex]+closeA)
+			$("#word").html(template.catB.items[tRound.catIndex])
 			$("#word").css("display","block"); 
 		}
 		else if (tRound.category == template.cat1.datalabel)
 		{ 
-			$("#word").html(open1+template.cat1.items[tRound.catIndex]+close1)
+			$("#word").html(template.cat1.items[tRound.catIndex])
 			$("#word").css("display","block"); 
 		}
 		else if (tRound.category == template.cat2.datalabel)
 		{ 
-			$("#word").html(open1+template.cat2.items[tRound.catIndex]+close1)
+			$("#word").html(template.cat2.items[tRound.catIndex])
 			$("#word").css("display","block"); 
 		}
 	}

@@ -85,3 +85,25 @@ tr{
 td {
 	padding-left: 30px;
 }
+
+#consent_form {
+	margin-top: 100px;
+}
+
+
+h1 {
+	text-align: center;
+	float: clear;
+}
+
+.right {
+	position: absolute;
+	top: 0px;
+	left: 680px;
+}
+
+.left {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
