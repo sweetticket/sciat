@@ -52,6 +52,14 @@ function loadInstructions(stage)
 					$.get("core/instruct2.html", function(data) {
 						$("#instructions").html(data);
 					});
+				
+				}else if (sub == "" || sub2 == ""){
+					alert("Please fill out all fields.");
+					$.get("core/instruct1.html", function(data) {
+						$("#instructions").html(data);
+						$("#subID").val(sub);
+						$("#subID_confirm").val(sub2);
+					});
 				}
 				else if (sub != sub2) {
 					alert("Emails do not match.");
@@ -60,15 +68,8 @@ function loadInstructions(stage)
 						$("#subID").val(sub);
 						$("#subID_confirm").val(sub2);
 					});
-				}else if (!sValidEmailAddress(sub)){
+				}else if (!isValidEmailAddress(sub)){
 					alert("Please enter a valid email address.");
-					$.get("core/instruct1.html", function(data) {
-						$("#instructions").html(data);
-						$("#subID").val(sub);
-						$("#subID_confirm").val(sub2);
-					});
-				}else if (sub == "" || sub2 == ""){
-					alert("Please fill out all fields.");
 					$.get("core/instruct1.html", function(data) {
 						$("#instructions").html(data);
 						$("#subID").val(sub);
