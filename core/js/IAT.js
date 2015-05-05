@@ -48,21 +48,28 @@ function loadInstructions(stage)
 		case 'two':
 			sub = $("#subID").val().trim();
 			sub2 = $("#subID_confirm").val().trim();
-				if(isValidEmailAddress(sub) && (sub == sub2)) {
+				if((sub != "") && (sub2 != "") && (sub == sub2) && isValidEmailAddress(sub)) {
 					$.get("core/instruct2.html", function(data) {
 						$("#instructions").html(data);
 					});
 				}
 				else if (sub != sub2) {
 					alert("Emails do not match.");
-					$.get("core/instruct0.html", function(data) {
+					$.get("core/instruct1.html", function(data) {
 						$("#instructions").html(data);
 						$("#subID").val(sub);
 						$("#subID_confirm").val(sub2);
 					});
 				}else if (!sValidEmailAddress(sub)){
 					alert("Please enter a valid email address.");
-					$.get("core/instruct0.html", function(data) {
+					$.get("core/instruct1.html", function(data) {
+						$("#instructions").html(data);
+						$("#subID").val(sub);
+						$("#subID_confirm").val(sub2);
+					});
+				}else if (sub == "" || sub2 == ""){
+					alert("Please fill out all fields.");
+					$.get("core/instruct1.html", function(data) {
 						$("#instructions").html(data);
 						$("#subID").val(sub);
 						$("#subID_confirm").val(sub2);
