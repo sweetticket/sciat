@@ -129,6 +129,7 @@ function startIAT()
 	loopnum = 0;
 	total_errors = 0;
 	pause = false;
+	sum_resp_time = 0;
 	
 	// default to show results to participant
 	if (!('showResult' in template))
@@ -417,12 +418,14 @@ function instructionPage()
 		}
 		else
 		{
-		    resulttext = "<div style='text-align:center;padding:20px'>Thanks for participating!</div>";
+			var avg_resp_time = sum_resp_time / 192;
+		    resulttext = "<div style='text-align:center;padding:20px'><p>Thanks for participating!</p><p>Total errors: "+total_errors+"</p><p>Average Response Time: "+avg_resp_time+" ms</p></div>";
 		    $("#picture_frame").html(resulttext);
 		}
 	}
 	else
 	{
+			pause = true;
 			$.get("core/gInstruct"+(instruct_num)+".html", function(data) { $('#exp_instruct').html(data); });
 	}
 }
@@ -648,7 +651,7 @@ function WriteFile()
 	var subject = sub;
 	subject = subject.length==0 ? "unknown" : subject;
 	var str = "";
-	for (i=0; i<roundArray.length; i++)
+	for (i=1; i<5; i++)
 	{
 		for (j=0;j<roundArray[i].length;j++)
 		{
@@ -730,6 +733,10 @@ function keyHandler(kEvent)
 // Get the stimulus for this session & round and display it
 function displayItem()
 {
+	pause = false;
+	if (typeof tooSlowVar !== 'undefined') {
+		clearTimeout(tooSlowVar);
+	}
 	var tRound = roundArray[session][roundnum]; 
 	tRound.starttime = new Date().getTime(); // the time the item was displayed
 	
@@ -753,7 +760,8 @@ function displayItem()
 			$("#word").html(template.cat2.items[tRound.catIndex])
 			$("#word").css("display","block"); 
 		}
-	setTimeout(tooSlow, 1500);
+	
+	tooSlowVar = setTimeout(tooSlow, 1500);
 }
 
 function tooSlow() {
@@ -767,6 +775,7 @@ function step(){
 	$("#tooslow").css("display", "none");
 	$("#wrong").css("display","none"); // remove X if it exists
 		roundArray[session][roundnum].endtime = new Date().getTime(); // end time
+		sum_resp_time += roundArray[session][roundnum].endtime - roundArray[session][roundnum].starttime;
 		// if less than 24 trials run in a row
 		if (loopnum < 23) {
 			loopnum++;
