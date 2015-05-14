@@ -1,11 +1,16 @@
 body {
     background:none repeat scroll 0 0 #FFFFFF;
     border:0 none;
+    font-family: Arial, sans-serif;
 }
 
 #instructions
 {
-    width: 800px;
+	margin: 0 auto;
+    width: 600px;
+    font-size: 16px;
+\	padding-bottom: 60px;
+
 }
 
 #experiment_frame
@@ -76,6 +81,9 @@ body {
 	margin-right: auto;
 	height: 80px;
 	display: none;
+	color: red;
+	font-size:  20px;
+	text-align: center;
 }
 
 #tooslow {
@@ -86,6 +94,7 @@ body {
 	text-align: center;
 	display: none;
 }
+
 
 tr{
 	text-align: center;
@@ -102,17 +111,27 @@ td {
 
 h1 {
 	text-align: center;
-	float: clear;
+	position: relative;
+	right: 35px;
 }
 
 .right {
-	position: absolute;
-	top: 0px;
-	left: 680px;
+	float: right;
+	margin-top: -90px;
+	width: 90px;
 }
 
 .left {
-	position: absolute;
-	top: 0px;
-	left: 0px;
+	float: left;
+	margin-top: -90px;
+	width: 100px;
+}
+
+.centered {
+	text-align: center;
+}
+
+.agree_consent {
+	position: relative;
+	left: 50px;
 }
