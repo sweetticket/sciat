@@ -419,8 +419,11 @@ function instructionPage()
 		else
 		{
 			var avg_resp_time = sum_resp_time / 192;
-		    resulttext = "<div style='text-align:center;padding:20px'><p>Thanks for participating!</p><p>Total errors: "+total_errors+"</p><p>Average Response Time: "+avg_resp_time+" ms</p></div>";
+		    resulttext = "<div style='text-align:center;padding:20px'><p>Thanks for participating!</p>"+
+        "<p>We will be back in touch with you in about 6 weeks to tell you more about this study and what your performance on this measures reflects about your motivation.  Thanks again.</p>"+
+        "<p>Total errors: "+total_errors+"</p><p>Average Response Time: "+avg_resp_time+" ms</p></div>";
 		    $("#picture_frame").html(resulttext);
+        $('#under_instruct').hide();
 		}
 	}
 	else
