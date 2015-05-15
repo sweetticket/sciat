@@ -128,6 +128,7 @@ function startIAT()
 	roundnum = 0;
 	loopnum = 0;
 	total_errors = 0;
+	total_non_resp = 0;
 	pause = false;
 	sum_resp_time = 0;
 	
@@ -190,6 +191,7 @@ function IATround()
 	this.catIndex = 0;
 	this.correct = 0;
 	this.errors = 0;
+	this.non_resp = 0;
 }
 
 // Create array for each session & round, with pre-randomized ordering of images
@@ -736,10 +738,12 @@ function keyHandler(kEvent)
 // Get the stimulus for this session & round and display it
 function displayItem()
 {
-	pause = false;
 	if (typeof tooSlowVar !== 'undefined') {
 		clearTimeout(tooSlowVar);
 	}
+	tooSlowVar = setTimeout(tooSlow, 1500);
+	pause = false;
+
 	var tRound = roundArray[session][roundnum]; 
 	tRound.starttime = new Date().getTime(); // the time the item was displayed
 	
@@ -764,12 +768,16 @@ function displayItem()
 			$("#word").css("display","block"); 
 		}
 	
-	tooSlowVar = setTimeout(tooSlow, 1500);
+	//tooSlowVar = setTimeout(tooSlow, 1500);
 }
 
 function tooSlow() {
 	if (!pause){
+		pause = true;
 		$("#tooslow").css("display", "block");
+		total_non_resp++;
+		roundArray[session][roundnum].non_resp++; // note error
+		setTimeout(step, 2000);
 	}
 }
 
@@ -805,6 +813,7 @@ function step(){
 
 function runSession(kEvent)
 {
+	//tooSlowVar = setTimeout(tooSlow, 1500);
 	var rCorrect = roundArray[session][roundnum].correct;
 	var unicode = kEvent.keyCode? kEvent.keyCode : kEvent.charCode;
 	keyZ = (unicode == 122 || unicode == 90 );
@@ -814,7 +823,8 @@ function runSession(kEvent)
 		// if correct key (1 & E) or (2 & I)
 		if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod)) {
 			console.log("correct");
-			step();
+			clearTimeout(tooSlowVar);
+			setTimeout(step, 300);
 		}
 		// incorrect key
 		else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ)) {
@@ -823,6 +833,7 @@ function runSession(kEvent)
 			$("#wrong").css("display","block"); // show X
 			roundArray[session][roundnum].errors++; // note error
 			total_errors++;
+			clearTimeout(tooSlowVar);
 			setTimeout(step, 2000);
 		}
 	}
