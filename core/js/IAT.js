@@ -423,7 +423,7 @@ function instructionPage()
 			var avg_resp_time = sum_resp_time / 192;
 		    resulttext = "<div style='text-align:center;padding:20px'><p>Thanks for participating!</p>"+
         "<p>We will be back in touch with you in about 6 weeks to tell you more about this study and what your performance on this measures reflects about your motivation.  Thanks again.</p>"+
-        "<p>Total errors: "+total_errors+"</p><p>Average Response Time: "+avg_resp_time+" ms</p></div>";
+        "<p>Total errors: "+total_errors+"</p><p>Average Response Time: "+Math.round((avg_resp_time/1000) * 100)/100+" seconds</p></div>";
 		    $("#picture_frame").html(resulttext);
         $('#under_instruct').hide();
 		}
@@ -432,6 +432,7 @@ function instructionPage()
 	{
 			pause = true;
 			$.get("core/gInstruct"+(instruct_num)+".html", function(data) { $('#exp_instruct').html(data); });
+			$('#under_instruct').hide();
 	}
 }
 
@@ -724,6 +725,7 @@ function keyHandler(kEvent)
 	else if (kEvent.which) unicode = kEvent.which;
 	if (currentState == "instruction" && unicode == 32)
     {
+    	$('#under_instruct').show();
 		currentState = "play";
 		$('#exp_instruct').html('');
 		displayItem();
