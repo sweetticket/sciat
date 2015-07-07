@@ -784,59 +784,64 @@ function tooSlow() {
 }
 
 function step(){
-	pause = false;
-	$("#tooslow").css("display", "none");
-	$("#wrong").css("display","none"); // remove X if it exists
-		roundArray[session][roundnum].endtime = new Date().getTime(); // end time
-		sum_resp_time += roundArray[session][roundnum].endtime - roundArray[session][roundnum].starttime;
-		// if less than 24 trials run in a row
-		if (loopnum < 23) {
-			loopnum++;
-			roundnum++;
-			console.log(roundnum);
-			$(".IATitem").css("display","none"); // hide all items
-			displayItem(); // display chosen item
-		} else {
-    		$(".IATitem").css("display","none"); // hide all items
-    		if (roundnum >= roundArray[session].length-1){
-    			session++; // move to next session
-    			console.log(session);
-				roundnum = 0; // reset rounds to 0
-			}else{
+
+	if (currentState == "play") {
+		pause = false;
+		$("#tooslow").css("display", "none");
+		$("#wrong").css("display","none"); // remove X if it exists
+			roundArray[session][roundnum].endtime = new Date().getTime(); // end time
+			sum_resp_time += roundArray[session][roundnum].endtime - roundArray[session][roundnum].starttime;
+			// if less than 24 trials run in a row
+			if (loopnum < 23) {
+				loopnum++;
 				roundnum++;
 				console.log(roundnum);
+				$(".IATitem").css("display","none"); // hide all items
+				displayItem(); // display chosen item
+			} else {
+	    		$(".IATitem").css("display","none"); // hide all items
+	    		if (roundnum >= roundArray[session].length-1){
+	    			session++; // move to next session
+	    			console.log(session);
+					roundnum = 0; // reset rounds to 0
+				}else{
+					roundnum++;
+					console.log(roundnum);
+				}
+					loopnum = 0;
+					instruct_num++;
+					currentState = "instruction"; // change state to instruction
+					instructionPage(); // show instruction page
 			}
-				loopnum = 0;
-				instruct_num++;
-				currentState = "instruction"; // change state to instruction
-				instructionPage(); // show instruction page
-		}
+	}
 }
 
 function runSession(kEvent)
 {
-	//tooSlowVar = setTimeout(tooSlow, 1500);
-	var rCorrect = roundArray[session][roundnum].correct;
-	var unicode = kEvent.keyCode? kEvent.keyCode : kEvent.charCode;
-	keyZ = (unicode == 122 || unicode == 90 );
-	keyPeriod = (unicode == 46 || unicode == 190 );
-		
-	if (!pause){
-		// if correct key (1 & E) or (2 & I)
-		if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod)) {
-			console.log("correct");
-			clearTimeout(tooSlowVar);
-			setTimeout(step, 300);
-		}
-		// incorrect key
-		else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ)) {
-			pause = true;
-			$("#tooslow").css("display", "none");
-			$("#wrong").css("display","block"); // show X
-			roundArray[session][roundnum].errors++; // note error
-			total_errors++;
-			clearTimeout(tooSlowVar);
-			setTimeout(step, 2000);
+	if (currentState == "play") {
+		//tooSlowVar = setTimeout(tooSlow, 1500);
+		var rCorrect = roundArray[session][roundnum].correct;
+		var unicode = kEvent.keyCode? kEvent.keyCode : kEvent.charCode;
+		keyZ = (unicode == 122 || unicode == 90 );
+		keyPeriod = (unicode == 46 || unicode == 190 );
+			
+		if (!pause){
+			// if correct key (1 & E) or (2 & I)
+			if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod)) {
+				console.log("correct");
+				clearTimeout(tooSlowVar);
+				setTimeout(step, 300);
+			}
+			// incorrect key
+			else if ((rCorrect == 1 && keyPeriod) || (rCorrect == 2 && keyZ)) {
+				pause = true;
+				$("#tooslow").css("display", "none");
+				$("#wrong").css("display","block"); // show X
+				roundArray[session][roundnum].errors++; // note error
+				total_errors++;
+				clearTimeout(tooSlowVar);
+				setTimeout(step, 2000);
+			}
 		}
 	}
 
