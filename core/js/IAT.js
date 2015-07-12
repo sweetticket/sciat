@@ -830,6 +830,7 @@ function runSession(kEvent)
 			if ((rCorrect == 1 && keyZ) || (rCorrect == 2 && keyPeriod)) {
 				console.log("correct");
 				clearTimeout(tooSlowVar);
+        pause = true;
 				setTimeout(step, 300);
 			}
 			// incorrect key
