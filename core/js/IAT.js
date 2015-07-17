@@ -684,7 +684,7 @@ function WriteFile()
   {   
     for (j=0;j<roundArray[i].length;j++)
     {
-      labelstr += "B" + (i+1) + "_" + (j+1) + ","+"B" + (i+1) + "_" + (j+1) + " Errors," + "," + "B" + (i+1) + "_" + (j+1) + " NoResp,";
+      labelstr += "B" + (i+1) + "_" + (j+1) + ","+"B" + (i+1) + "_" + (j+1) + " Errors," + "B" + (i+1) + "_" + (j+1) + " NoResp,";
 
     }
   }
