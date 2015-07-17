@@ -122,6 +122,7 @@ function loadInstructions(stage)
 // Initialize variables, build page & data object, display instructions
 function startIAT()
 {
+  startelapsed = new Date();
 	currentState = "instruction";
 	session = 1;
 	instruct_num = 1;
@@ -348,7 +349,7 @@ function initRounds()
     			nUnimp++;
     		}
     	}
-
+      console.log("session: "+i);
     	console.log("Spartan: "+nSpart);
     	console.log("Important: "+nImp);
     	console.log("Unimportant: "+nUnimp);
@@ -400,6 +401,9 @@ function instructionPage()
     }
 	if (instruct_num == 9)
 	{
+    endelapsed = new Date();
+    millis = endelapsed - startelapsed;
+    timeelapsed = parseInt(millis / 1000);
 		$("#left_cat").html("");
 		$("#right_cat").html("");
 		$("#exp_instruct").html("<img src='core/spinner.gif'>");
@@ -675,9 +679,31 @@ function WriteFile()
 		}
 	}
 	
-	
+	var labelstr = "";
+  for (i=1; i<5; i++)
+  {   
+    for (j=0;j<roundArray[i].length;j++)
+    {
+      labelstr += "B" + (i+1) + "_" + (j+1) + ","+"B" + (i+1) + "_" + (j+1) + " Errors," + "," + "B" + (i+1) + "_" + (j+1) + " NoResp,";
+
+    }
+  }
+  
+  var rowstr = "";
+  for (i=1; i<5; i++)
+  {   
+    for (j=0;j<roundArray[i].length;j++)
+    {
+      console.log("roundArray["+i+"]["+j+"].errors = " + roundArray[i][j].errors);
+      rowstr += (roundArray[i][j].endtime - roundArray[i][j].starttime)+",";
+      rowstr += roundArray[i][j].errors + "," + roundArray[i][j].non_resp + ","; 
+      
+    }
+  }
+  
     $.post("core/fileManager.php", { 'op':'writeoutput', 'template':template.name, 
- 			'subject': subject, 'data': str });	
+      'subject': subject, 'totalerrors':total_errors, 'totalnonresp':total_non_resp, 'timeelapsed':timeelapsed, 'labels':labelstr, 'row':rowstr, 'data': str }); 
+  	
  	
 	// notify user of success?
 }
@@ -695,6 +721,7 @@ function WriteDatabase()
 	        str += roundArray[i][j].category+",";
 			str += roundArray[i][j].catIndex+",";
 			str += roundArray[i][j].errors+",";
+      str += roundArray[session][roundnum].non_resp+",";
 			str += (roundArray[i][j].endtime - roundArray[i][j].starttime)+"\n";
 			var catIndex=roundArray[i][j].catIndex;
 			var category=roundArray[i][j].category;
@@ -839,6 +866,7 @@ function runSession(kEvent)
 				$("#tooslow").css("display", "none");
 				$("#wrong").css("display","block"); // show X
 				roundArray[session][roundnum].errors++; // note error
+        console.log("round errors: "+ roundArray[session][roundnum].errors);
 				total_errors++;
 				clearTimeout(tooSlowVar);
 				setTimeout(step, 2000);

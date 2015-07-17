@@ -1,5 +1,7 @@
 <?php
 $base_dir = realpath(dirname(__FILE__));
+date_default_timezone_set('America/New_York');
+
 
 $newTemplate = array(
 	"name" => "",
@@ -459,18 +461,54 @@ if( isset($_REQUEST['op']) )
 			{
 				if( isset($_REQUEST['data']) )
 				{	
-					
+				
 					$folder_dir = "../templates/".$_REQUEST['template']."/output/";
 
 					$sub = isset( $_REQUEST['subject'] ) ? $_REQUEST['subject'] : 'unknown2' ;
 
 					$data = $_REQUEST["data"]; 
-					$datetxt = date('Y-m-d-H-s');
+					$datetxt = date('Y-m-d-H-i');
+					$timeelapsed = $_REQUEST["timeelapsed"];
+					$totalerrors = strval($_REQUEST["totalerrors"]);
+					$totalnonresp = strval($_REQUEST["totalnonresp"]);
+					$rowdata = $_REQUEST['row'];
+					$labels = $_REQUEST['labels'];
 					$fh = fopen($folder_dir. $_REQUEST['template'] . "-" . $sub . '-' . $datetxt . '.txt', 'w');
 					fwrite($fh, $data);
 					fclose($fh);
 					
+					//write to CSV file
 					
+					//IF MACRO.CSV DOESNT EXIST, CREATE IT AND ADD HEADERS
+					
+					if (!file_exists($folder_dir . "macro.csv")) {
+						$file = fopen($folder_dir . "macro.csv","a");
+						$headers = array("ID,Date,Time Elapsed,Errors,NonResp" . $labels);
+						$apos = array("'");
+						
+						foreach ($apos as $line)
+						{
+							fputcsv($file,explode(',',$line));
+						}						
+						
+						foreach ($headers as $line)
+						{
+							fputcsv($file,explode(',',$line));
+						}
+						
+						
+						fclose($file);
+					}
+					
+					$info = array($sub . "," . $datetxt . "," . $timeelapsed . "," . $totalerrors . "," . $totalnonresp . "," . $rowdata);
+					$file = fopen($folder_dir . "macro.csv","a");
+					
+					foreach ($info as $line)
+					{
+						fputcsv($file,explode(',',$line));
+					}
+	
+					fclose($file);
 									
 				}
 				else
@@ -525,27 +563,14 @@ if( isset($_REQUEST['op']) )
 		if( isset($_REQUEST['template']) )
 				{
 						
-						$filepath=realpath(dirname(getcwd()));
-						$filename = $filepath. '/input-text';
-						if (file_exists($filename)) {
-    						echo "The file $filename exists";
-    						//error_log(print_r("The file $filename exists", TRUE));
-						} else 
-							{
-    						echo "The file $filename does not exist";
-    						//error_log(print_r("The file $filename does not exist", TRUE));
-							$dsn = "mysql:host=localhost";
-							try {
-								$pdo = new PDO($dsn, "IATexp555","myIAT");
-								//error_log(print_r("Database exists", TRUE));
-								echo 'success';
-							}
-							catch(PDOException $e) { 
-                				echo 'ERROR';
-                				//error_log(print_r("Database doesn't exist", TRUE));
-            				}
+						$dsn = "mysql:host=localhost";
+						try {
+							$pdo = new PDO($dsn, "IATexp555","myIAT");
+							echo 'success';
+						}
+						catch(PDOException $e) { 
+                			echo 'ERROR';
             			}
-            		
             		
             	}
 		
