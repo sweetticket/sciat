@@ -483,7 +483,7 @@ if( isset($_REQUEST['op']) )
 					
 					if (!file_exists($folder_dir . "macro.csv")) {
 						$file = fopen($folder_dir . "macro.csv","a");
-						$headers = array("ID,Date,Time Elapsed,Errors,NonResp" . $labels);
+						$headers = array("ID,Date,Time Elapsed,Errors,NonResp," . $labels);
 						$apos = array("'");
 						
 						foreach ($apos as $line)

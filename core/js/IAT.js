@@ -13,6 +13,21 @@ function isValidEmailAddress(emailAddress) {
     return pattern.test(emailAddress);
 };
 
+/**
+* Randomize array element order in-place.
+* Using Fisher-Yates shuffle algorithm.
+*/
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
+
 // Loads the input file and starts introduction
 function initialize()
 {	
@@ -236,63 +251,43 @@ function initRounds()
             
         }
 		prevIndexA = -1; prevIndex1 = -1;
-        for (var j = 0; j<numrounds; j++)
+      var catArrPre = [];
+      for (var x = 0; x<numSpartan; x++){
+        catArrPre.push('S');
+      }
+      for (var x = 0; x<numImp; x++){
+        catArrPre.push('I');
+      }
+      for (var x = 0; x<numUnimp; x++){
+        catArrPre.push('U');
+      }
+
+      var catArr = shuffleArray(catArrPre);
+      console.log(catArr);
+
+        for (var j = 0; j<catArr.length; j++)
         {
 
             var round = new IATround();
 
-
-            // randomly choose category
-            var randNum = Math.random();
-
-            if (randNum < 0.25){
-            	if (numSpartan > 0){
-            		round.category = template.catA.datalabel;
-            		numSpartan--;
-            	}else if (numImp > 0){
-            		round.category = template.cat1.datalabel;
-            		numImp--;
-            	}else if (numUnimp > 0){
-            		round.category = template.cat2.datalabel;
-            		numUnimp--;
-            	}
-            } else if (randNum < 0.5 ){
-            	if (numImp > 0){
-            		round.category = template.cat1.datalabel;
-            		numImp--;
-            	}else if (numSpartan > 0){
-            		round.category = template.catA.datalabel;
-            		numSpartan--;
-            	}else if (numUnimp > 0){
-            		round.category = template.cat2.datalabel;
-            		numUnimp--;
-            	}
-            } else {
-            	if (numUnimp > 0){
-            		round.category = template.cat2.datalabel;
-            		numUnimp--;
-            	}else if (numSpartan > 0){
-            		round.category = template.catA.datalabel;
-            		numSpartan--;
-            	}else if (numImp > 0){
-            		round.category = template.cat1.datalabel;
-            		numImp--;
-            	}
+            switch(catArr[j]){
+              case 'S':
+                round.category = template.catA.datalabel;
+                break;
+              case 'I':
+                round.category = template.cat1.datalabel;
+                break;
+              case 'U':
+                round.category = template.cat2.datalabel;
+                break;
             }
 
-
-
-
-
-
-
-            //if (j % 2 == 0) { round.category = template.catA.datalabel; }
-				//else { round.category = (Math.random() < 0.5 ? template.cat1.datalabel : template.cat2.datalabel); }
-        	// pick a category
         	if (round.category == template.catA.datalabel) 
         	{ 
-				round.itemtype = template.catA.itemtype;
-				if (i < 3) { round.correct = 1; }
+				
+          round.itemtype = template.catA.itemtype;
+				
+        if (i < 3) { round.correct = 1; }
 				else { round.correct = 2; }
 				
 				// pick an item different from the last
